@@ -9,7 +9,7 @@ url = 'https://stellarburgers.nomoreparties.site/api'
 class TestCreationOrder:
 
     @allure.title('Проверка ручки создания заказа неавторизованным пользователем')
-    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим')
+    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей "success"=True и "ingredients"')
     def test_create_order_by_non_authorized_user_check(self):
         r_ingredients = requests.get(f"{url}/ingredients")
         ingr_1 = r_ingredients.json()["data"][1]["_id"]
@@ -20,10 +20,10 @@ class TestCreationOrder:
         r_order = requests.post(f"{url}/orders", data=data_ingredients)
 
         assert r_order.status_code == 200
-        assert r_order.json()["success"] == True
+        assert r_order.json()["success"] == True and r_order.json()["order"]["ingredients"] is not None
 
     @allure.title('Проверка ручки создания заказа авторизованным пользователем')
-    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим')
+    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей "success"=True и "ingredients"')
     def test_create_order_by_authorized_user_check(self, login_user):
 
         r_ingredients = requests.get(f"{url}/ingredients")
@@ -33,11 +33,13 @@ class TestCreationOrder:
             "ingredients": [ingr_1, ingr_2]
         }
         token = login_user.json()["accessToken"]
-        data_headers = {"accessToken": token}
-        r_order = requests.post(f"{url}/orders", headers=data_headers, data=data_ingredients)
+        data_auth = {
+            "authorization": token
+        }
+        r_order = requests.post(f"{url}/orders", headers=data_auth, data=data_ingredients)
 
         assert r_order.status_code == 200
-        assert r_order.json()["success"] == True
+        assert r_order.json()["success"] == True and r_order.json()["order"]["ingredients"] is not None
 
     @allure.title('Проверка ручки создания заказа без ингредиентов')
     @allure.description('Сравниваем ожидаемый статус-код ответа "400" с фактическим')
@@ -47,8 +49,10 @@ class TestCreationOrder:
             "ingredients": []
         }
         token = login_user.json()["accessToken"]
-        data_headers = {"accessToken": token}
-        r_order = requests.post(f"{url}/orders", headers=data_headers, data=data_ingredients)
+        data_auth = {
+            "authorization": token
+        }
+        r_order = requests.post(f"{url}/orders", headers=data_auth, data=data_ingredients)
 
         assert r_order.status_code == 400
         assert r_order.json()["message"] == 'Ingredient ids must be provided'
@@ -61,7 +65,9 @@ class TestCreationOrder:
             "ingredients": ["60d3b41abdacab0026a733c6falseids"]
         }
         token = login_user.json()["accessToken"]
-        data_headers = {"accessToken": token}
-        r_order = requests.post(f"{url}/orders", headers=data_headers, data=data_ingredients)
+        data_auth = {
+            "authorization": token
+        }
+        r_order = requests.post(f"{url}/orders", headers=data_auth, data=data_ingredients)
 
         assert r_order.status_code == 500
