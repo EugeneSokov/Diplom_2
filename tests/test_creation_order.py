@@ -9,7 +9,8 @@ url = 'https://stellarburgers.nomoreparties.site/api'
 class TestCreationOrder:
 
     @allure.title('Проверка ручки создания заказа неавторизованным пользователем')
-    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей "success"=True и "ingredients"')
+    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей'
+                        ' "success"=True и "ingredients"')
     def test_create_order_by_non_authorized_user_check(self):
         r_ingredients = requests.get(f"{url}/ingredients")
         ingr_1 = r_ingredients.json()["data"][1]["_id"]
@@ -23,7 +24,8 @@ class TestCreationOrder:
         assert r_order.json()["success"] == True and r_order.json()["order"]["ingredients"] is not None
 
     @allure.title('Проверка ручки создания заказа авторизованным пользователем')
-    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей "success"=True и "ingredients"')
+    @allure.description('Сравниваем ожидаемый статус-код ответа "200" с фактическим и наличие в теле ответа полей'
+                        ' "success"=True и "ingredients"')
     def test_create_order_by_authorized_user_check(self, login_user):
 
         r_ingredients = requests.get(f"{url}/ingredients")

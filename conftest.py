@@ -20,6 +20,7 @@ def login_user():
 
     return r_login
 
+
 @pytest.fixture()
 def create_user():
     email = fake.email()
@@ -38,7 +39,8 @@ def create_user():
 
     yield r_register
 
-    r_delete = requests.delete(f"{url}/auth/user", headers=data_auth, data=payload)
+    requests.delete(f"{url}/auth/user", headers=data_auth, data=payload)
+
 
 @pytest.fixture()
 def change_user_data():
@@ -65,6 +67,4 @@ def change_user_data():
 
     yield r_user_change
 
-    r_delete = requests.delete(f"{url}/auth/user", headers=data_auth, data=payload_new)
-
-
+    requests.delete(f"{url}/auth/user", headers=data_auth, data=payload_new)
