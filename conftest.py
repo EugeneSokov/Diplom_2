@@ -38,33 +38,4 @@ def create_user():
     }
 
     yield r_register
-
     requests.delete(f"{url}/auth/user", headers=data_auth, data=payload)
-
-
-@pytest.fixture()
-def change_user_data():
-    email = fake.email()
-    password = fake.password()
-    name = fake.first_name()
-    payload = {
-        "email": email,
-        "password": password,
-        "name": name
-    }
-    r = requests.post(f"{url}/auth/register", data=payload)
-    token = r.json()["accessToken"]
-    data_auth = {
-        "authorization": token
-    }
-    email_new = fake.email()
-    name_new = fake.first_name()
-    payload_new = {
-        "email": email_new,
-        "name": name_new
-    }
-    r_user_change = requests.patch(f"{url}/auth/user", headers=data_auth, data=payload_new)
-
-    yield r_user_change
-
-    requests.delete(f"{url}/auth/user", headers=data_auth, data=payload_new)
